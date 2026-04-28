@@ -1,0 +1,56 @@
+.MODEL SMALL
+.DATA
+ARR DW 1,2,3,4,5,6,7
+LEN DW 7
+KEY DW 6
+
+FOUND_MSG DB "FOUND$"
+NOT_FOUND_MSG DB "NOT FOUND$"
+
+.CODE
+MOV AX, @DATA
+MOV DS, AX
+
+MOV SI, 0          ; low = 0
+MOV DI, 12         ; high = (7-1)*2 = 12 (byte index)
+
+SEARCH:
+CMP SI, DI
+JA NOT_FOUND       ; if low > high
+
+; mid = (low + high)/2
+MOV BX, SI
+ADD BX, DI
+SHR BX, 1          ; divide by 2
+
+MOV AX, KEY
+CMP AX, ARR[BX]
+
+JE FOUND
+JB LEFT            ; key < mid
+
+; RIGHT SIDE
+ADD BX, 2
+MOV SI, BX
+JMP SEARCH
+
+LEFT:
+SUB BX, 2
+MOV DI, BX
+JMP SEARCH
+
+FOUND:
+LEA DX, FOUND_MSG
+MOV AH, 09H
+INT 21H
+JMP EXIT
+
+NOT_FOUND:
+LEA DX, NOT_FOUND_MSG
+MOV AH, 09H
+INT 21H
+
+EXIT:
+MOV AH, 4CH
+INT 21H
+END
