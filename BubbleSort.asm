@@ -1,0 +1,29 @@
+.MODEL SMALL
+.DATA
+ARR DW 5H,4H,3H,2H,1H
+LEN DW $-ARR-2
+.CODE
+MOV AX,@DATA
+MOV DS,AX
+MOV AX,0
+SUB AX,2
+MOV DX,LEN
+OLOOP: ADD AX,2
+           CMP AX,DX
+           JAE EXIT
+           MOV BX,0
+           JMP ILOOP
+ILOOP: CMP BX,DX
+          JAE OLOOP
+          MOV CX,ARR[BX]
+          CMP CX,ARR[BX+2]
+          JA EX
+          ADD BX,2
+          JMP ILOOP
+EX: XCHG CX,ARR[BX+2]
+     MOV ARR[BX],CX
+     ADD BX,2
+     JMP ILOOP
+EXIT: MOV AH,4CH
+        INT 21H
+END
